@@ -1,0 +1,22 @@
+{
+  "name": "supercentile",
+  "version": "0.0.0",
+  "description": "compressing metrics histo",
+  "main": "sketch.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dtudury/supercentile.git"
+  },
+  "author": "David Tudury <david.tudury@gmail.com>",
+  "license": "GPL-3.0-or-later",
+  "bugs": {
+    "url": "https://github.com/dtudury/supercentile/issues"
+  },
+  "homepage": "https://github.com/dtudury/supercentile#readme",
+  "devDependencies": {
+    "standard": "^12.0.1"
+  }
+}
