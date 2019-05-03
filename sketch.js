@@ -1,4 +1,6 @@
-class Values {
+const CoinbasePro = require('coinbase-pro')
+
+class Range {
   constructor (low = Number.POSITIVE_INFINITY, high = Number.NEGATIVE_INFINITY, count = 0, total = 0) {
     this.low = low
     this.high = high
@@ -15,7 +17,7 @@ class Values {
     let subtotal = this.total - this.low - this.high
     let middle = (this.low + this.high) / 2
     let average = subtotal / (this.count - 2)
-    let values = new Values()
+    let values = new Range()
     values.addValue(this.low)
     values.addValue(this.high)
     if (middle > average) {
@@ -29,11 +31,35 @@ class Values {
         values.addValue(this.high - i * step)
       }
     }
-    console.log(values)
+    console.log(values.toString())
+  }
+  toString () {
+    return `<${this.low}..(${this.total / this.count}x${this.count})..${this.high}>`
   }
 }
 
-let values = new Values()
+class Distribution {
+  constructor () {
+    this.ranges = [new Range()]
+  }
+  addValue (value) {
+    for (let i = 0; i < this.ranges.length; i++) {
+      const range = this.ranges[i]
+      if (range.high > value) {
+        range.addValue(value)
+        return
+      }
+    }
+  }
+}
+
+let values = new Range()
   ;[1, 2, 5, 85, 90, 95, 100].forEach(value => values.addValue(value))
-console.log(values)
+console.log(values.toString())
 values.split()
+
+// const publicClient = new CoinbasePro.PublicClient()
+const websocket = new CoinbasePro.WebsocketClient(['BTC-USD', 'ETH-USD'])
+websocket.on('message', data => {
+  console.log(data)
+})

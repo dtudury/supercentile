@@ -18,5 +18,8 @@
   "homepage": "https://github.com/dtudury/supercentile#readme",
   "devDependencies": {
     "standard": "^12.0.1"
+  },
+  "dependencies": {
+    "coinbase-pro": "^0.9.0"
   }
 }
