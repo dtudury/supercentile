@@ -1,58 +1,71 @@
 const CoinbasePro = require('coinbase-pro')
 
-class Range {
-  constructor (low = Number.POSITIVE_INFINITY, high = Number.NEGATIVE_INFINITY, count = 0, total = 0) {
-    this.low = low
-    this.high = high
-    this.count = count
-    this.total = total
-  }
-  addValue (value) {
-    this.low = Math.min(this.low, value)
-    this.high = Math.max(this.high, value)
-    this.count++
-    this.total += value
-  }
-  split () {
-    let subtotal = this.total - this.low - this.high
-    let middle = (this.low + this.high) / 2
-    let average = subtotal / (this.count - 2)
-    let values = new Range()
-    values.addValue(this.low)
-    values.addValue(this.high)
-    if (middle > average) {
-      let step = ((average - this.low) * 2 / (this.count - 1))
-      for (let i = 1; i < this.count - 1; i++) {
-        values.addValue(this.low + i * step)
-      }
+class Distribution {
+  constructor (value) {
+    if (value != null) {
+      this.values = [Number.NEGATIVE_INFINITY, value, Number.POSITIVE_INFINITY]
+      this.weights = [value, value]
+      this.volumes = [1, 1]
     } else {
-      let step = ((this.high - average) * 2 / (this.count - 1))
-      for (let i = 1; i < this.count - 1; i++) {
-        values.addValue(this.high - i * step)
-      }
+      this.values = [Number.NEGATIVE_INFINITY, Number.POSITIVE_INFINITY]
+      this.weights = [0]
+      this.volumes = [0]
     }
-    console.log(values.toString())
   }
   toString () {
-    return `<${this.low}..(${this.total / this.count}x${this.count})..${this.high}>`
+    return `${this.values}, ${this.weights}, ${this.volumes}`
   }
-}
-
-class Distribution {
-  constructor () {
-    this.ranges = [new Range()]
+  clone () {
+    let out = new Distribution()
+    out.values = [...this.values]
+    out.weights = [...this.weights]
+    out.volumes = [...this.volumes]
   }
-  addValue (value) {
-    for (let i = 0; i < this.ranges.length; i++) {
-      const range = this.ranges[i]
-      if (range.high > value) {
-        range.addValue(value)
-        return
+  static add (distA, distB) {
+    const distOut = new Distribution()
+    distOut.values = []
+    distOut.weights = []
+    distOut.volumes = []
+    let idxA = 0
+    let idxB = 0
+    let valueA = distA.values[idxA]
+    let valueB = distB.values[idxB]
+    while (valueA < Number.POSITIVE_INFINITY || valueB < Number.POSITIVE_INFINITY) {
+      if (valueA < valueB) {
+        distOut.values.push(valueA)
+        valueA = distA.values[++idxA]
+      } else if (valueA > valueB) {
+        distOut.values.push(valueB)
+        valueB = distB.values[++idxB]
+      } else {
+        distOut.values.push(valueA)
+        valueA = distA.values[++idxA]
+        valueB = distB.values[++idxB]
       }
     }
+    distOut.values.push(Number.POSITIVE_INFINITY)
+
+    for (let idxOut = 0; idxOut < distOut.values.length - 1; idxOut++) {
+      let range = [distOut.values[idxOut], distOut.values[idxOut + 1]]
+      // distOut.weights.push(Distribution.getWeightInRange(distA, range) + Distribution.getWeightInRange(distB, range))
+      distOut.volumes.push(Distribution.getVolumeInRange(distA, range) + Distribution.getVolumeInRange(distB, range))
+      console.log(range)
+    }
+    return distOut
+  }
+  static getVolumeInRange (dist, range) {
+    
   }
 }
 
+let a = new Distribution(1)
+console.log(a.toString())
+let b = new Distribution(2)
+console.log(b.toString())
+let sum = Distribution.add(a, b)
+console.log(sum.toString())
+
+/*
 let values = new Range()
   ;[1, 2, 5, 85, 90, 95, 100].forEach(value => values.addValue(value))
 console.log(values.toString())
@@ -63,3 +76,4 @@ const websocket = new CoinbasePro.WebsocketClient(['BTC-USD', 'ETH-USD'])
 websocket.on('message', data => {
   console.log(data)
 })
+*/
