@@ -22,29 +22,29 @@ class Range {
     const density = this.weight / this.volume
     const middle = (this.high + this.low) / 2
     if (density <= middle) {
-      // this.low + this.high + SUM(1 -> (volume-1)) * x === weight
-
-      // (this.weight - this.low - this.high) === ((1 + this.weight - 2) / 2) * x
-      // let step = (this.weight - this.low - this.high) / ((2 + this.volume - 2) / 1)
-      let step = 14 / 3
-      step = (this.weight - this.high) / (this.volume - 1) - this.low
-      console.log(step)
-      let sum = this.low
-      console.log(this.low, sum)
-      for (let i = 1; i < this.volume - 1; i++) {
+      let x = (this.weight - this.high) / (this.volume - 1) - this.low
+      let step = 2 * x / (this.volume - 2)
+      let sum = 0
+      for (let i = 0; i < this.volume - 1; i++) {
         sum += this.low + step * i
         console.log(this.low + step * i, sum)
       }
       sum += this.high
       console.log(this.high, sum)
     } else {
-      const q = (this.high - v) / density
-      console.log(q)
+      let x = (this.weight - this.low) / (this.volume - 1) - this.high
+      let step = 2 * x / (this.volume - 2)
+      let sum = this.low
+      console.log(this.low, sum)
+      for (let i = this.volume - 2; i >= 0; i--) {
+        sum += this.high + step * i
+        console.log(this.high + step * i, sum)
+      }
     }
   }
 }
 
-const r1 = new Range(74, 5, 5, 25)
+const r1 = new Range(69, 6, 5, 25)
 console.log(r1)
 console.log(r1.split(10))
 
